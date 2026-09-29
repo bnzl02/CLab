@@ -26,7 +26,7 @@ namespace ChemiseLab.Services
             {
                 DateOrder = DateTime.Now,
                 StatutOrder = "CR", // CR ==> VL ==> (LV ; AN ; RF)
-                //TotalOrder = ,
+                TotalOrder = orderDto.TotalAmount,
                 //ReferenceLivraison
                 NomClient = orderDto.Clt_LName,
                 PrenomClient = orderDto.Clt_Name,
@@ -39,8 +39,6 @@ namespace ChemiseLab.Services
             _contextDB.Orders.Add(order);
             await _contextDB.SaveChangesAsync();
 
-            decimal total = 0;
-
             foreach (var ligneDto in orderDto.Lignes)
             {
                 if (!prixProduits.TryGetValue(ligneDto.Product_ID, out var prixUnitaire))
@@ -48,19 +46,17 @@ namespace ChemiseLab.Services
 
                 var ligne = new LigneOrder
                 {
-                    IdOrder = ligneDto.Product_ID,
+                    IdOrder = order.IdOrder,
                     Quantite = ligneDto.Quantity,
-                    PrixUnitaire = ligneDto.Single_Price,
+                    PrixUnitaire = prixUnitaire,
                     IdProduit = ligneDto.Product_ID,
                     IdCouleur = ligneDto.Color_ID,
                     IdTaille = ligneDto.Size_ID,
                 };
 
                 _contextDB.LigneOrders.Add(ligne);
-                total += prixUnitaire * ligneDto.Quantity;
             }
 
-            order.TotalOrder = total;
             await _contextDB.SaveChangesAsync();
         }
 
