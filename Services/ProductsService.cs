@@ -22,7 +22,7 @@ namespace ChemiseLab.Services
         {
             return await _contextDB.Produits
         .AsNoTracking()
-        .Where(p => p.IdSousCategorie == idSubCat)
+        .Where(p => p.IdSousCategorie == idSubCat && p.Actif == true)
         .GroupJoin(
             _contextDB.Images,
             p => p.IdProduit,
@@ -36,6 +36,7 @@ namespace ChemiseLab.Services
                 {
                     Id = img.IdImage,
                     Url = img.UrlImage
+
                 }).ToList()
             })
         .ToListAsync();
@@ -45,31 +46,32 @@ namespace ChemiseLab.Services
             List<int> _ListSubCat = _contextDB.SousCategories.Where(sc=> sc.IdCategorie == idCat).Select(sc=>sc.IdSousCategorie).ToList();
 
             return await _contextDB.Produits
-        .AsNoTracking()
-        .Where(p => _ListSubCat.Contains(p.IdSousCategorie))
-        .GroupJoin(
-            _contextDB.Images,
-            p => p.IdProduit,
-            img => img.IdProduit,
-            (p, images) => new Get_Products_Dto
-            {
-                Product_ID = p.IdProduit,
-                Product_Name = p.Libelle,
-                Product_Price = p.Prix,
-                Product_Images = images.Select(img => new ProduitImages_Dto
-                {
-                    Id = img.IdImage,
-                    Url = img.UrlImage
-                }).ToList()
-            })
-        .ToListAsync();
+                        .AsNoTracking()
+                        .Where(p => _ListSubCat.Contains(p.IdSousCategorie) && p.Actif == true)
+                        .GroupJoin(
+                            _contextDB.Images,
+                            p => p.IdProduit,
+                            img => img.IdProduit,
+                            (p, images) => new Get_Products_Dto
+                            {
+                                Product_ID = p.IdProduit,
+                                Product_Name = p.Libelle,
+                                Product_Price = p.Prix,
+                                Product_Images = images.Select(img => new ProduitImages_Dto
+                                {
+                                    Id = img.IdImage,
+                                    Url = img.UrlImage
+
+                                }).ToList()
+                            })
+                        .ToListAsync();
         }
 
         public async Task<Get_DetailsProduct_Dto> Get_DetailsProduct_ByIdAsync(int IdP)
         {
             var produit = await _contextDB.Produits
                         .AsNoTracking()
-                        .Where(c => c.IdProduit == IdP)
+                        .Where(c => c.IdProduit == IdP && c.Actif == true)
                         .Select(c => new Get_DetailsProduct_Dto
                         {
                             Product_ID = c.IdProduit,
@@ -100,12 +102,13 @@ namespace ChemiseLab.Services
                 {
                     Id = i.IdImage,
                     Url = i.UrlImage,
+
                 }).ToListAsync();
         }
 
         public async Task<List<Get_ColorsProduct_Dto>> Get_AllColorsProduct_ByIdProduct_Async(int idProduct)
         {
-            // 1. Récupérer toutes les combinaisons (couleur + taille) pour ce produit, en une seule requête SQL
+            // 1. Récupérer toutes les combinaisons (couleur + taille) pour ce produit, en une seule requête
             var stocks = await _contextDB.Stocks
                 .AsNoTracking()
                 .Where(s => s.IdProduit == idProduct)
@@ -147,6 +150,72 @@ namespace ChemiseLab.Services
                 .ToList();
 
             return result;
+        }
+
+        public async Task<IEnumerable<Get_AllProducts_Suggestion_Dto>> GetAllProductsAsync()
+        {
+            return await _contextDB.Produits
+                .AsNoTracking()
+                .Where(p=> p.Actif == true)
+                .Select(c => new Get_AllProducts_Suggestion_Dto
+                {
+                    Product_ID = c.IdProduit,
+                    Product_Name = c.Libelle,
+                    Product_Price = c.Prix,
+                    Product_Ref = c.Reference,
+                    Product_Catg = c.IdSousCategorieNavigation.IdCategorieNavigation.Libelle,
+                    Product_S_Catg = c.IdSousCategorieNavigation.IdCategorieNavigation.Libelle,
+                    Product_Images = c.Images.Select(img => new ProduitImages_Dto
+                    {
+                        Id = img.IdImage,
+                        Url = img.UrlImage
+                    }).ToList()
+                })
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Get_Products_Dto>> Get_AllProducts_ByListIdCat_Async(List<int> _L_idCat)
+        {
+            return await _contextDB.Produits
+            .AsNoTracking()
+            .Where(p => _L_idCat.Contains(p.IdSousCategorieNavigation.IdCategorie) && p.Actif == true)
+            .GroupJoin(
+                _contextDB.Images,
+                p => p.IdProduit,
+                img => img.IdProduit,
+                (p, images) => new Get_Products_Dto
+                {
+                    Product_ID = p.IdProduit,
+                    Product_Name = p.Libelle,
+                    Product_Price = p.Prix,
+                    Product_Images = images.Select(img => new ProduitImages_Dto
+                    {
+                        Id = img.IdImage,
+                        Url = img.UrlImage
+
+                    }).ToList()
+                })
+            .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Get_Products_Dto>> Get_AllProducts_ExceptIdCat_Async(int idCat)
+        {
+            return await _contextDB.Produits
+                .AsNoTracking()
+                .Where(p => p.IdSousCategorieNavigation.IdCategorie != idCat && p.Actif == true)
+                .Select(p => new Get_Products_Dto
+                {
+                    Product_ID = p.IdProduit,
+                    Product_Name = p.Libelle,
+                    Product_Price = p.Prix,
+                    Product_Images = p.Images.Select(img => new ProduitImages_Dto
+                    {
+                        Id = img.IdImage,
+                        Url = img.UrlImage
+
+                    }).ToList()
+                })
+                .ToListAsync();
         }
     }
 }

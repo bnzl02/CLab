@@ -55,5 +55,18 @@ namespace ChemiseLab.Services
                 })
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<GetCategories_Dto>> GetAllCategoriesExceptAsync(int idCategorie)
+        {
+            return await _contextDB.Categories
+                .AsNoTracking()
+                .Where(c => c.IdCategorie != idCategorie)
+                .Select(c => new GetCategories_Dto
+                {
+                    Category_ID = c.IdCategorie,
+                    Category_Name = c.Libelle
+                })
+                .ToListAsync();
+        }
     }
 }

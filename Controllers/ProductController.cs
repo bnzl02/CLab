@@ -59,5 +59,39 @@ namespace ChemiseLab.Controllers
 
             return Ok(product);
         }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Get_Products_Dto>>> GetAllProducts()
+        {
+            var All_A_Products = await _productService.GetAllProductsAsync();
+            return Ok(All_A_Products);
+        }
+
+        // POST: api/product/by-Listcategories
+        [HttpPost("by-Listcategories")]
+        public async Task<ActionResult<IEnumerable<Get_Products_Dto>>> GetAllProductsByListIdCat([FromBody] List<int> idCat)
+        {
+            if (idCat == null || !idCat.Any())
+                return BadRequest(new { message = "La liste d'identifiants ne peut pas être vide." });
+
+            var products = await _productService.Get_AllProducts_ByListIdCat_Async(idCat);
+
+            if (!products.Any())
+                return NotFound(new { message = "Aucun produit trouvé pour ces catégories." });
+
+            return Ok(products);
+        }
+
+        // GET: api/product/except-categorie/5
+        [HttpGet("except-categorie/{idCat}")]
+        public async Task<ActionResult<IEnumerable<Get_Products_Dto>>> GetAllProductsExceptIdCat(int idCat)
+        {
+            var products = await _productService.Get_AllProducts_ExceptIdCat_Async(idCat);
+
+            if (!products.Any())
+                return NotFound(new { message = "Aucun produit trouvé." });
+
+            return Ok(products);
+        }
     }
 }

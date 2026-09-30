@@ -37,4 +37,16 @@ public class CategoriesController : ControllerBase
 
         return Ok(sousCategories);
     }
+
+    // GET: api/categories/exclude/5
+    [HttpGet("excepCategory/{idCategorie}")]
+    public async Task<ActionResult<IEnumerable<GetCategories_Dto>>> GetAllCategoriesExcept(int idCategorie)
+    {
+        var categories = await _categorieService.GetAllCategoriesExceptAsync(idCategorie);
+
+        if (!categories.Any())
+            return NotFound("Aucune autre catégorie trouvée.");
+
+        return Ok(categories);
+    }
 }

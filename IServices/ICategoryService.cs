@@ -9,5 +9,6 @@ namespace ChemiseLab.IServices
         Task<IEnumerable<Get_S_Categories_Dto>> GetAll_Sub_Categories_ByIdCat_Async(int IdCat);
         Task<string?> GetCategoryNameByIdAsync(int idCategorie);
         Task<string?> GetSubCategoryNameByIdAsync(int idSubCategorie);
+        Task<IEnumerable<GetCategories_Dto>> GetAllCategoriesExceptAsync(int idCategorie);
     }
 }
