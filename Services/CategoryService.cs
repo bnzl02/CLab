@@ -38,7 +38,7 @@ namespace ChemiseLab.Services
         public async Task<string?> GetSubCategoryNameByIdAsync(int idSubCategorie)
         {
             return await _contextDB.SousCategories
-                .Where(c => c.IdCategorie == idSubCategorie)
+                .Where(c => c.IdSousCategorie == idSubCategorie)
                 .Select(c => c.Libelle)
                 .FirstOrDefaultAsync();
         }
@@ -50,7 +50,7 @@ namespace ChemiseLab.Services
                 .Where(sc => sc.IdCategorie == IdCat)
                 .Select(c => new Get_S_Categories_Dto
                 {
-                    S_Category_ID = c.IdCategorie,
+                    S_Category_ID = c.IdSousCategorie,
                     S_Category_Name = c.Libelle
                 })
                 .ToListAsync();
