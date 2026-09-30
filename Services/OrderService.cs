@@ -10,6 +10,11 @@ namespace ChemiseLab.Services
     {
         private readonly ApplicationDbContext _contextDB;
 
+        public OrderService(ApplicationDbContext context)
+        {
+            _contextDB = context;
+        }
+
         public async Task Create_New_OrderAsync(NewOrder_Dto orderDto)
         {
             if (orderDto.Lignes == null || !orderDto.Lignes.Any())
@@ -36,27 +41,24 @@ namespace ChemiseLab.Services
                 PaysClient = orderDto.Clt_Country,
             };
 
-            _contextDB.Orders.Add(order);
-            await _contextDB.SaveChangesAsync();
-
             foreach (var ligneDto in orderDto.Lignes)
             {
                 if (!prixProduits.TryGetValue(ligneDto.Product_ID, out var prixUnitaire))
                     throw new ArgumentException($"Produit introuvable : {ligneDto.Product_ID}");
 
-                var ligne = new LigneOrder
+                // Rattachée via la navigation : la commande et ses lignes sont
+                // enregistrées ensemble (un seul SaveChanges = une seule transaction).
+                order.LigneOrders.Add(new LigneOrder
                 {
-                    IdOrder = order.IdOrder,
                     Quantite = ligneDto.Quantity,
                     PrixUnitaire = prixUnitaire,
                     IdProduit = ligneDto.Product_ID,
                     IdCouleur = ligneDto.Color_ID,
                     IdTaille = ligneDto.Size_ID,
-                };
-
-                _contextDB.LigneOrders.Add(ligne);
+                });
             }
 
+            _contextDB.Orders.Add(order);
             await _contextDB.SaveChangesAsync();
         }
 
