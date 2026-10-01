@@ -46,8 +46,7 @@ namespace ChemiseLab.Services
                 if (!prixProduits.TryGetValue(ligneDto.Product_ID, out var prixUnitaire))
                     throw new ArgumentException($"Produit introuvable : {ligneDto.Product_ID}");
 
-                // Rattachée via la navigation : la commande et ses lignes sont
-                // enregistrées ensemble (un seul SaveChanges = une seule transaction).
+                // Rattachée via la navigation : la commande et ses lignes sont enregistrées ensemble (un seul SaveChanges = une seule transaction).
                 order.LigneOrders.Add(new LigneOrder
                 {
                     Quantite = ligneDto.Quantity,
@@ -56,6 +55,16 @@ namespace ChemiseLab.Services
                     IdCouleur = ligneDto.Color_ID,
                     IdTaille = ligneDto.Size_ID,
                 });
+
+                int _stockPrdct = await _contextDB.Stocks
+                    .Where(s => s.IdProduit == ligneDto.Product_ID
+                             && s.IdTaille == ligneDto.Size_ID
+                             && s.IdCouleur == ligneDto.Color_ID)
+                    .Select(s => s.Stock1)
+                    .FirstOrDefaultAsync();
+
+                _stockPrdct = _stockPrdct - 1;
+                _contextDB.Entry(_stockPrdct).State = EntityState.Modified;
             }
 
             _contextDB.Orders.Add(order);

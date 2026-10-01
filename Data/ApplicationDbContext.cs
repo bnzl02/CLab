@@ -73,6 +73,7 @@ public partial class ApplicationDbContext : DbContext
             entity.HasIndex(e => e.IdProduit, "idx_image_produit");
 
             entity.Property(e => e.IdImage).HasColumnName("id_image");
+            entity.Property(e => e.IdCouleur).HasColumnName("Id_Couleur");
             entity.Property(e => e.IdProduit).HasColumnName("id_produit");
             entity.Property(e => e.UrlImage)
                 .HasMaxLength(255)

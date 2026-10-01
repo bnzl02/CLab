@@ -11,5 +11,7 @@ public partial class Image
 
     public int IdProduit { get; set; }
 
+    public int? IdCouleur { get; set; }
+
     public virtual Produit IdProduitNavigation { get; set; } = null!;
 }
