@@ -183,7 +183,7 @@ namespace ChemiseLab.Services
                     (sc, t) => new
                     {
                         sc.c.IdCouleur,
-                        sc.c.LibelleCouleur,
+                        sc.c.HexaCouleur,
                         t.IdTaille,
                         t.LibelleFr,
                         t.LibelleSport,
@@ -193,11 +193,11 @@ namespace ChemiseLab.Services
 
             // 2. Regrouper par couleur (en mémoire)
             var result = stocks
-                .GroupBy(s => new { s.IdCouleur, s.LibelleCouleur })
+                .GroupBy(s => s.IdCouleur)
                 .Select(g => new Get_ColorsProduct_Dto
                 {
-                    ID = g.Key.IdCouleur,
-                    Libelle = g.Key.LibelleCouleur,
+                    ID = g.Key,
+                    HexaCode = g.First().HexaCouleur ?? new List<string>(),
                     Sizes = g.Select(x => new Get_SizesProduct_Dto
                     {
                         ID = x.IdTaille,

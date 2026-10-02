@@ -59,6 +59,7 @@ public partial class ApplicationDbContext : DbContext
             entity.ToTable("couleur");
 
             entity.Property(e => e.IdCouleur).HasColumnName("id_couleur");
+            entity.Property(e => e.HexaCouleur).HasColumnName("hexa_couleur");
             entity.Property(e => e.LibelleCouleur)
                 .HasMaxLength(50)
                 .HasColumnName("libelle_couleur");

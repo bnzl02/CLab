@@ -9,6 +9,8 @@ public partial class Couleur
 
     public string LibelleCouleur { get; set; } = null!;
 
+    public List<string>? HexaCouleur { get; set; }
+
     public virtual ICollection<LigneOrder> LigneOrders { get; set; } = new List<LigneOrder>();
 
     public virtual ICollection<Stock> Stocks { get; set; } = new List<Stock>();
