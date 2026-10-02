@@ -49,13 +49,13 @@ namespace ChemiseLab.Controllers
         }
 
         // GET: api/product/5
-        [HttpGet("{idProduct}/couleur/{idCouleur}")]
-        public async Task<ActionResult<Get_DetailsProduct_Dto>> GetDetailProductByIdP(int idPrdct, int idColor)
+        [HttpGet("{idProduct}/couleur/{idColor}")]
+        public async Task<ActionResult<Get_DetailsProduct_Dto>> GetDetailProductByIdP(int idProduct, int idColor)
         {
-            var product = await _productService.Get_DetailsProduct_ByIdAsync(idPrdct, idColor);
+            var product = await _productService.Get_DetailsProduct_ByIdAsync(idProduct, idColor);
 
             if (product == null)
-                return NotFound($"Aucun produit trouvé pour l'id {idPrdct}");
+                return NotFound($"Aucun produit trouvé pour l'id {idProduct}");
 
             return Ok(product);
         }

@@ -17,7 +17,7 @@ public partial class Produit
 
     public int IdSousCategorie { get; set; }
 
-    public bool Actif { get; set; }
+    public string Actif { get; set; } = null!;
 
     public virtual SousCategorie IdSousCategorieNavigation { get; set; } = null!;
 

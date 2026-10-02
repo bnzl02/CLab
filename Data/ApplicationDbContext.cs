@@ -73,7 +73,7 @@ public partial class ApplicationDbContext : DbContext
             entity.HasIndex(e => e.IdProduit, "idx_image_produit");
 
             entity.Property(e => e.IdImage).HasColumnName("id_image");
-            entity.Property(e => e.IdCouleur).HasColumnName("Id_Couleur");
+            entity.Property(e => e.IdCouleur).HasColumnName("id_couleur");
             entity.Property(e => e.IdProduit).HasColumnName("id_produit");
             entity.Property(e => e.UrlImage)
                 .HasMaxLength(255)
@@ -178,7 +178,9 @@ public partial class ApplicationDbContext : DbContext
             entity.HasIndex(e => e.IdSousCategorie, "idx_produit_sous_categorie");
 
             entity.Property(e => e.IdProduit).HasColumnName("id_produit");
-            entity.Property(e => e.Actif).HasDefaultValue(true);
+            entity.Property(e => e.Actif)
+                .HasMaxLength(20)
+                .HasDefaultValueSql("true");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.IdSousCategorie).HasColumnName("id_sous_categorie");
             entity.Property(e => e.Libelle)

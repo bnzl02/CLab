@@ -23,7 +23,7 @@ namespace ChemiseLab.Services
             // 1. Récupérer les produits actifs de cette sous-catégorie
             var produits = await _contextDB.Produits
                 .AsNoTracking()
-                .Where(p => p.IdSousCategorie == idSubCat && p.Actif == true)
+                .Where(p => p.IdSousCategorie == idSubCat && p.Actif != "NAC")
                 .ToListAsync();
 
             var idsProduits = produits.Select(p => p.IdProduit).ToList();
@@ -56,6 +56,7 @@ namespace ChemiseLab.Services
                         Product_Name = p.Libelle,
                         Product_Price = p.Prix,
                         Product_Couleur_ID = couleur.IdCouleur,
+                        Product_Status = p.Actif,
                         Product_Images = images
                             .Where(img => img.IdProduit == p.IdProduit && img.IdCouleur == couleur.IdCouleur)
                             .Select(img => new ProduitImages_Dto
@@ -78,7 +79,7 @@ namespace ChemiseLab.Services
             // 1. Récupérer les produits actifs de cette sous-catégorie
             var produits = await _contextDB.Produits
                 .AsNoTracking()
-                .Where(p => _ListSubCat.Contains(p.IdSousCategorie) && p.Actif == true)
+                .Where(p => _ListSubCat.Contains(p.IdSousCategorie) && p.Actif != "NAC")
                 .ToListAsync();
 
             var idsProduits = produits.Select(p => p.IdProduit).ToList();
@@ -111,6 +112,7 @@ namespace ChemiseLab.Services
                         Product_Name = p.Libelle,
                         Product_Price = p.Prix,
                         Product_Couleur_ID = couleur.IdCouleur,
+                        Product_Status = p.Actif,
                         Product_Images = images
                             .Where(img => img.IdProduit == p.IdProduit && img.IdCouleur == couleur.IdCouleur)
                             .Select(img => new ProduitImages_Dto
@@ -130,7 +132,7 @@ namespace ChemiseLab.Services
         {
             var produit = await _contextDB.Produits
                         .AsNoTracking()
-                        .Where(c => c.IdProduit == IdP && c.Actif == true)
+                        .Where(c => c.IdProduit == IdP && c.Actif == "AC")
                         .Select(c => new Get_DetailsProduct_Dto
                         {
                             Product_ID = c.IdProduit,
@@ -215,7 +217,7 @@ namespace ChemiseLab.Services
         {
             return await _contextDB.Produits
                 .AsNoTracking()
-                .Where(p=> p.Actif == true)
+                .Where(p=> p.Actif != "NAC")
                 .Select(c => new Get_AllProducts_Suggestion_Dto
                 {
                     Product_ID = c.IdProduit,
@@ -237,7 +239,7 @@ namespace ChemiseLab.Services
         {
             return await _contextDB.Produits
             .AsNoTracking()
-            .Where(p => _L_idCat.Contains(p.IdSousCategorieNavigation.IdCategorie) && p.Actif == true)
+            .Where(p => _L_idCat.Contains(p.IdSousCategorieNavigation.IdCategorie) && p.Actif != "NAC")
             .GroupJoin(
                 _contextDB.Images,
                 p => p.IdProduit,
@@ -261,7 +263,7 @@ namespace ChemiseLab.Services
         {
             return await _contextDB.Produits
                 .AsNoTracking()
-                .Where(p => p.IdSousCategorieNavigation.IdCategorie != idCat && p.Actif == true)
+                .Where(p => p.IdSousCategorieNavigation.IdCategorie != idCat && p.Actif != "NAC")
                 .Select(p => new Get_Products_Dto
                 {
                     Product_ID = p.IdProduit,
