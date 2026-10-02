@@ -74,27 +74,56 @@ namespace ChemiseLab.Services
         public async Task<IEnumerable<Get_Products_Dto>> Get_AllProducts_ByIdCat_Async(int idCat)
         {
             List<int> _ListSubCat = _contextDB.SousCategories.Where(sc=> sc.IdCategorie == idCat).Select(sc=>sc.IdSousCategorie).ToList();
+            
+            // 1. Récupérer les produits actifs de cette sous-catégorie
+            var produits = await _contextDB.Produits
+                .AsNoTracking()
+                .Where(p => _ListSubCat.Contains(p.IdSousCategorie) && p.Actif == true)
+                .ToListAsync();
 
-            return await _contextDB.Produits
-                        .AsNoTracking()
-                        .Where(p => _ListSubCat.Contains(p.IdSousCategorie) && p.Actif == true)
-                        .GroupJoin(
-                            _contextDB.Images,
-                            p => p.IdProduit,
-                            img => img.IdProduit,
-                            (p, images) => new Get_Products_Dto
+            var idsProduits = produits.Select(p => p.IdProduit).ToList();
+
+            // 2. Récupérer toutes les combinaisons produit+couleur disponibles (via Stocks)
+            var productCouleurs = await _contextDB.Stocks
+                .Where(s => idsProduits.Contains(s.IdProduit))
+                .Select(s => new { s.IdProduit, s.IdCouleur })
+                .Distinct()
+                .ToListAsync();
+
+            // 3. Récupérer toutes les images concernées, avec leur couleur
+            var images = await _contextDB.Images
+                .Where(img => idsProduits.Contains(img.IdProduit))
+                .Select(img => new { img.IdProduit, img.IdCouleur, img.IdImage, img.UrlImage })
+                .ToListAsync();
+
+            // 4. Assembler : une entrée par (produit, couleur)
+            var result = new List<Get_Products_Dto>();
+
+            foreach (var p in produits)
+            {
+                var couleursDuProduit = productCouleurs.Where(pc => pc.IdProduit == p.IdProduit);
+
+                foreach (var couleur in couleursDuProduit)
+                {
+                    result.Add(new Get_Products_Dto
+                    {
+                        Product_ID = p.IdProduit,
+                        Product_Name = p.Libelle,
+                        Product_Price = p.Prix,
+                        Product_Couleur_ID = couleur.IdCouleur,
+                        Product_Images = images
+                            .Where(img => img.IdProduit == p.IdProduit && img.IdCouleur == couleur.IdCouleur)
+                            .Select(img => new ProduitImages_Dto
                             {
-                                Product_ID = p.IdProduit,
-                                Product_Name = p.Libelle,
-                                Product_Price = p.Prix,
-                                Product_Images = images.Select(img => new ProduitImages_Dto
-                                {
-                                    Id = img.IdImage,
-                                    Url = img.UrlImage
-
-                                }).ToList()
+                                Id = img.IdImage,
+                                Url = img.UrlImage
                             })
-                        .ToListAsync();
+                            .ToList()
+                    });
+                }
+            }
+
+            return result;
         }
 
         public async Task<Get_DetailsProduct_Dto> Get_DetailsProduct_ByIdAsync(int IdP, int idClr)
