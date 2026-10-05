@@ -10,5 +10,7 @@ namespace ChemiseLab.IServices
         Task<string?> GetCategoryNameByIdAsync(int idCategorie);
         Task<string?> GetSubCategoryNameByIdAsync(int idSubCategorie);
         Task<IEnumerable<GetCategories_Dto>> GetAllCategoriesExceptAsync(int idCategorie);
+        Task<int> CreateCategoryAsync(AddCategory_Dto categoryDto);
+        Task<int> CreateSousCategoryAsync(Add_SubCategory_Dto sousCategoryDto);
     }
 }

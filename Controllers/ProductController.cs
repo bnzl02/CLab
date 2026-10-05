@@ -127,5 +127,28 @@ namespace ChemiseLab.Controllers
                 return StatusCode(500, new { message = "Une erreur est survenue lors de la récupération des produits." });
             }
         }
+
+        // POST: api/product
+        [HttpPost]
+        public async Task<IActionResult> CreateProduct([FromBody] AddProduct_Dto productDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var idProduit = await _productService.CreateProductAsync(productDto);
+                return CreatedAtAction(nameof(GetDetailProductByIdP), new { idPrdct = idProduit },
+                    new { message = "Produit créé avec succès.", id = idProduit });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Une erreur est survenue lors de la création du produit." });
+            }
+        }
     }
 }

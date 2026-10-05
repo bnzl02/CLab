@@ -278,5 +278,36 @@ namespace ChemiseLab.Services
                 })
                 .ToListAsync();
         }
+
+        public async Task<int> CreateProductAsync(AddProduct_Dto productDto)
+        {
+            var sousCategorieExiste = await _contextDB.SousCategories
+                .AnyAsync(sc => sc.IdSousCategorie == productDto.IdSousCategorie);
+
+            if (!sousCategorieExiste)
+                throw new ArgumentException($"Sous-catégorie introuvable : {productDto.IdSousCategorie}");
+
+            // Vérifier que la référence n'existe pas déjà (unicité métier)
+            var referenceExiste = await _contextDB.Produits
+                .AnyAsync(p => p.Reference == productDto.Product_Reference);
+
+            if (referenceExiste)
+                throw new ArgumentException($"Un produit avec la référence '{productDto.Product_Reference}' existe déjà.");
+
+            var produit = new Produit
+            {
+                Libelle = productDto.Product_Libelle,
+                Description = productDto.Product_Description,
+                Prix = productDto.Product_Prix,
+                Reference = productDto.Product_Reference,
+                IdSousCategorie = productDto.IdSousCategorie,
+                Actif = "AC",
+            };
+
+            _contextDB.Produits.Add(produit);
+            await _contextDB.SaveChangesAsync();
+
+            return produit.IdProduit;
+        }
     }
 }

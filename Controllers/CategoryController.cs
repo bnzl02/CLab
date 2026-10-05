@@ -76,4 +76,48 @@ public class CategoriesController : ControllerBase
             return StatusCode(500, new { message = "Une erreur est survenue lors de la récupération des catégories." });
         }
     }
-}
+
+        // POST: api/categories
+        [HttpPost]
+        public async Task<IActionResult> CreateCategory([FromBody] AddCategory_Dto categoryDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var idCategorie = await _categorieService.CreateCategoryAsync(categoryDto);
+                return Ok(new { message = "Catégorie créée avec succès.", id = idCategorie });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Une erreur est survenue lors de la création de la catégorie." });
+            }
+        }
+
+        // POST: api/categories/sous-categories
+        [HttpPost("sous-categories")]
+        public async Task<IActionResult> CreateSousCategory([FromBody] Add_SubCategory_Dto sousCategoryDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var idSousCategorie = await _categorieService.CreateSousCategoryAsync(sousCategoryDto);
+                return Ok(new { message = "Sous-catégorie créée avec succès.", id = idSousCategorie });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Une erreur est survenue lors de la création de la sous-catégorie." });
+            }
+        }
+    }

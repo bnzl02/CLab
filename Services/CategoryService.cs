@@ -68,5 +68,50 @@ namespace ChemiseLab.Services
                 })
                 .ToListAsync();
         }
+
+        public async Task<int> CreateCategoryAsync(AddCategory_Dto categoryDto)
+        {
+            var existeDeja = await _contextDB.Categories
+                .AnyAsync(c => c.Libelle == categoryDto.Libelle);
+
+            if (existeDeja)
+                throw new ArgumentException($"Une catégorie avec le libellé '{categoryDto.Libelle}' existe déjà.");
+
+            var categorie = new Categorie
+            {
+                Libelle = categoryDto.Libelle
+            };
+
+            _contextDB.Categories.Add(categorie);
+            await _contextDB.SaveChangesAsync();
+
+            return categorie.IdCategorie;
+        }
+
+        public async Task<int> CreateSousCategoryAsync(Add_SubCategory_Dto sousCategoryDto)
+        {
+            var categorieExiste = await _contextDB.Categories
+                .AnyAsync(c => c.IdCategorie == sousCategoryDto.IdCategorie);
+
+            if (!categorieExiste)
+                throw new ArgumentException($"Catégorie parente introuvable : {sousCategoryDto.IdCategorie} .Merci de créer la catégorie premierement !!");
+
+            var existeDeja = await _contextDB.SousCategories
+                .AnyAsync(sc => sc.Libelle == sousCategoryDto.Libelle && sc.IdCategorie == sousCategoryDto.IdCategorie);
+
+            if (existeDeja)
+                throw new ArgumentException($"Une sous-catégorie avec le libellé '{sousCategoryDto.Libelle}' existe déjà pour cette catégorie.");
+
+            var sousCategorie = new SousCategorie
+            {
+                Libelle = sousCategoryDto.Libelle,
+                IdCategorie = sousCategoryDto.IdCategorie
+            };
+
+            _contextDB.SousCategories.Add(sousCategorie);
+            await _contextDB.SaveChangesAsync();
+
+            return sousCategorie.IdSousCategorie;
+        }
     }
 }
