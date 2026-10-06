@@ -136,10 +136,12 @@ namespace ChemiseLab.Services
                         .Select(c => new Get_DetailsProduct_Dto
                         {
                             Product_ID = c.IdProduit,
+                            Product_Category = c.IdSousCategorieNavigation.IdCategorieNavigation.IdCategorie,
                             Product_Name = c.Libelle,
                             Product_Price = c.Prix,
                             Product_Ref = c.Reference,
                             Product_Desc = c.Description,
+                            
                         })
                         .FirstOrDefaultAsync();
 
@@ -148,7 +150,7 @@ namespace ChemiseLab.Services
 
             // Récupérer images, couleurs, tailles séparément (une requête chacune, réutilisation des méthodes existantes)
             produit.Product_Images = (await Get_AllImages_ByIdProduct(IdP,idClr)).ToList();
-            produit.Product_Colors = (await Get_AllColorsProduct_ByIdProduct_Async(IdP)).ToList();
+            produit.Product_Colors = (await Get_AllColorsProduct_ByIdProduct_Async(IdP, produit.Product_Category)).ToList();
             //produit.Product_Sizes = (await Get_AllSizesProduct_ByIdProduct_Async(IdP)).ToList();
 
             return produit;
@@ -167,7 +169,7 @@ namespace ChemiseLab.Services
                 }).ToListAsync();
         }
 
-        public async Task<List<Get_ColorsProduct_Dto>> Get_AllColorsProduct_ByIdProduct_Async(int idProduct)
+        public async Task<List<Get_ColorsProduct_Dto>> Get_AllColorsProduct_ByIdProduct_Async(int idProduct, int category)
         {
             // 1. Récupérer toutes les combinaisons (couleur + taille) pour ce produit, en une seule requête
             var stocks = await _contextDB.Stocks
@@ -203,7 +205,7 @@ namespace ChemiseLab.Services
                         ID = x.IdTaille,
                         Size_Classy = x.LibelleFr,
                         Size_Sport = x.LibelleSport,
-                        Size_Pants_USA = x.LibelleUsa
+                        Size_Pants_USA = category == 2 ? x.LibelleUsa : null,
                     })
                     .DistinctBy(t => t.ID)
                     .ToList()
