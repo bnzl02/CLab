@@ -311,5 +311,29 @@ namespace ChemiseLab.Services
 
             return produit.IdProduit;
         }
+
+        public async Task<IEnumerable<Get_AllProducts_Suggestion_Dto>> GetTop10ProductsAsync()
+        {
+            return await _contextDB.Produits
+                .AsNoTracking()
+                .Where(p => p.Actif != "NAC")
+                .OrderByDescending(p => p.DateCreation)
+                .Take(10)
+                .Select(c => new Get_AllProducts_Suggestion_Dto
+                {
+                    Product_ID = c.IdProduit,
+                    Product_Name = c.Libelle,
+                    Product_Price = c.Prix,
+                    Product_Ref = c.Reference,
+                    Product_Catg = c.IdSousCategorieNavigation.IdCategorieNavigation.Libelle,
+                    Product_S_Catg = c.IdSousCategorieNavigation.IdCategorieNavigation.Libelle,
+                    Product_Images = c.Images.Select(img => new ProduitImages_Dto
+                    {
+                        Id = img.IdImage,
+                        Url = img.UrlImage
+                    }).ToList()
+                })
+                .ToListAsync();
+        }
     }
 }

@@ -19,6 +19,10 @@ public partial class Produit
 
     public string Actif { get; set; } = null!;
 
+    public DateTime? DateCreation { get; set; }
+
+    public DateTime? DateLastmodif { get; set; }
+
     public virtual SousCategorie IdSousCategorieNavigation { get; set; } = null!;
 
     public virtual ICollection<Image> Images { get; set; } = new List<Image>();

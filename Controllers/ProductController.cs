@@ -150,5 +150,13 @@ namespace ChemiseLab.Controllers
                 return StatusCode(500, new { message = "Une erreur est survenue lors de la création du produit." });
             }
         }
+
+        // GET: api/product/Hometopten
+        [HttpGet("Hometopten")]
+        public async Task<ActionResult<IEnumerable<Get_Products_Dto>>> GetTop10Products()
+        {
+            var All_A_Products = await _productService.GetTop10ProductsAsync();
+            return Ok(All_A_Products);
+        }
     }
 }

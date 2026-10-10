@@ -27,5 +27,7 @@ public partial class Order
 
     public string? VilleClient { get; set; }
 
+    public DateTime? DateConfirmation { get; set; }
+
     public virtual ICollection<LigneOrder> LigneOrders { get; set; } = new List<LigneOrder>();
 }

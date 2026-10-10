@@ -141,6 +141,9 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.AdresseClient)
                 .HasMaxLength(255)
                 .HasColumnName("adresse_client");
+            entity.Property(e => e.DateConfirmation)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("date_confirmation");
             entity.Property(e => e.DateOrder)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("date_order");
@@ -182,6 +185,12 @@ public partial class ApplicationDbContext : DbContext
             entity.Property(e => e.Actif)
                 .HasMaxLength(20)
                 .HasDefaultValueSql("true");
+            entity.Property(e => e.DateCreation)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("date_creation");
+            entity.Property(e => e.DateLastmodif)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("date_lastmodif");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.IdSousCategorie).HasColumnName("id_sous_categorie");
             entity.Property(e => e.Libelle)
