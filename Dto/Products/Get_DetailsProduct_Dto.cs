@@ -10,6 +10,7 @@ namespace ChemiseLab.Dto.Products
         public string Product_Ref { get; set; }
         public decimal Product_Price { get; set; }
         public int Product_Category { get; set; }
+        public string Product_Status { get; set; }
         public List<Get_SizesProduct_Dto> Product_Sizes { get; set; }
         public List<Get_ColorsProduct_Dto> Product_Colors { get; set; }
         public List<ProduitImages_Dto> Product_Images { get; set; }

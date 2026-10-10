@@ -141,6 +141,7 @@ namespace ChemiseLab.Services
                             Product_Price = c.Prix,
                             Product_Ref = c.Reference,
                             Product_Desc = c.Description,
+                            Product_Status = c.Actif,
                             
                         })
                         .FirstOrDefaultAsync();
@@ -228,6 +229,7 @@ namespace ChemiseLab.Services
                     Product_Ref = c.Reference,
                     Product_Catg = c.IdSousCategorieNavigation.IdCategorieNavigation.Libelle,
                     Product_S_Catg = c.IdSousCategorieNavigation.IdCategorieNavigation.Libelle,
+                    Product_Status = c.Actif,
                     Product_Images = c.Images.Select(img => new ProduitImages_Dto
                     {
                         Id = img.IdImage,
@@ -251,6 +253,7 @@ namespace ChemiseLab.Services
                     Product_ID = p.IdProduit,
                     Product_Name = p.Libelle,
                     Product_Price = p.Prix,
+                    Product_Status = p.Actif,
                     Product_Images = images.Select(img => new ProduitImages_Dto
                     {
                         Id = img.IdImage,
@@ -271,6 +274,7 @@ namespace ChemiseLab.Services
                     Product_ID = p.IdProduit,
                     Product_Name = p.Libelle,
                     Product_Price = p.Prix,
+                    Product_Status = p.Actif,
                     Product_Images = p.Images.Select(img => new ProduitImages_Dto
                     {
                         Id = img.IdImage,
@@ -327,6 +331,7 @@ namespace ChemiseLab.Services
                     Product_Ref = c.Reference,
                     Product_Catg = c.IdSousCategorieNavigation.IdCategorieNavigation.Libelle,
                     Product_S_Catg = c.IdSousCategorieNavigation.IdCategorieNavigation.Libelle,
+                    Product_Status = c.Actif,
                     Product_Images = c.Images.Select(img => new ProduitImages_Dto
                     {
                         Id = img.IdImage,
