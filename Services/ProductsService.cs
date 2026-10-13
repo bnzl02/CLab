@@ -175,7 +175,7 @@ namespace ChemiseLab.Services
             // 1. Récupérer toutes les combinaisons (couleur + taille) pour ce produit, en une seule requête
             var stocks = await _contextDB.Stocks
                 .AsNoTracking()
-                .Where(s => s.IdProduit == idProduct)
+                .Where(s => s.IdProduit == idProduct && s.Stock1 > 0)
                 .Join(_contextDB.Couleurs,
                     s => s.IdCouleur,
                     c => c.IdCouleur,
