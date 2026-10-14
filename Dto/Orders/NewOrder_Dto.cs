@@ -10,11 +10,11 @@ namespace ChemiseLab.Dto.Orders
         public string Clt_Name { get; set; } = string.Empty;
         [Required, MaxLength(20)]
         public string Clt_LName { get; set; } = string.Empty;
-        [Required]
+        [Required, MaxLength(20)]
         public string Clt_Adress { get; set; } = string.Empty;
-        [Required]
+        [Required, MaxLength(10)]
         public string Clt_Tele { get; set; } = string.Empty;
-        [Required]
+        [Required, MaxLength(10)]
         public string Clt_City { get; set; } = string.Empty;
         public string Clt_Country { get; set; } = string.Empty;
 
