@@ -10,10 +10,12 @@ namespace ChemiseLab.Services
     public class OrderService : IOrderService
     {
         private readonly ApplicationDbContext _contextDB;
+        private readonly IDeliveryService _deliveryService;
 
-        public OrderService(ApplicationDbContext context)
+        public OrderService(ApplicationDbContext context, IDeliveryService delivery)
         {
             _contextDB = context;
+            _deliveryService = delivery;
         }
 
         public async Task Create_New_OrderAsync(NewOrder_Dto orderDto)
@@ -43,11 +45,12 @@ namespace ChemiseLab.Services
                     AdresseClient = orderDto.Clt_Adress,
                     TelephoneClient = orderDto.Clt_Tele,
                     VilleClient = orderDto.Clt_City,
+                    IdDistrict = orderDto.IdDistrict,
                     PaysClient = orderDto.Clt_Country,
                 };
 
                 _contextDB.Orders.Add(order);
-                await _contextDB.SaveChangesAsync();
+                //await _contextDB.SaveChangesAsync();
 
                 foreach (var ligneDto in orderDto.Lignes)
                 {
@@ -78,12 +81,22 @@ namespace ChemiseLab.Services
                     stock.Stock1 -= ligneDto.Quantity;
                 }
 
+                var libelles = await _contextDB.Produits
+                                .AsNoTracking()
+                                .Where(p => idsProduits.Contains(p.IdProduit))
+                                .ToDictionaryAsync(p => p.IdProduit, p => p.Libelle);
+
+                var products = string.Join(" et ", orderDto.Lignes.Select(l =>
+                    $"{l.Quantity} x {libelles.GetValueOrDefault(l.Product_ID, "Produit")}"));
+
+                order.ReferenceLivraison = await _deliveryService.CreateParcelAsync(order, products);
+
                 await _contextDB.SaveChangesAsync();
                 await transaction.CommitAsync();
 
             }
             catch (Exception ex) {
-                await transaction.RollbackAsync(); // annule tout ce qui a été fait dans ce bloc
+                await transaction.RollbackAsync();
                 throw;
             }
 

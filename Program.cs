@@ -1,4 +1,6 @@
+using ChemiseLab.Clients;
 using ChemiseLab.Data;
+using ChemiseLab.Dto;
 using ChemiseLab.IServices;
 using ChemiseLab.Services;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +20,10 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductsService, ProductsService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.Configure<ExternalApiOptions>(builder.Configuration.GetSection("ExternalApi"));
+builder.Services.AddHttpClient<ExternalApiClient>();
+builder.Services.AddScoped<IDeliveryService, DeliveryService>();
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 

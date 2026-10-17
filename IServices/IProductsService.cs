@@ -12,5 +12,6 @@ namespace ChemiseLab.IServices
         Task<IEnumerable<Get_Products_Dto>> Get_AllProducts_ExceptIdCat_Async(int idCat);
         Task<int> CreateProductAsync(AddProduct_Dto productDto);
         Task<IEnumerable<Get_AllProducts_Suggestion_Dto>> GetTop10ProductsAsync();
+        Task<string?> GetLibelleProduct_ByID(int id);
     }
 }

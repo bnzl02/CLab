@@ -340,5 +340,10 @@ namespace ChemiseLab.Services
                 })
                 .ToListAsync();
         }
+
+        public async Task<string?> GetLibelleProduct_ByID(int id)
+        {
+            return await _contextDB.Produits.Where(p => p.IdProduit == id).Select(p => p.Libelle).FirstOrDefaultAsync();
+        }
     }
 }
